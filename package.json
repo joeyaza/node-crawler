@@ -1,0 +1,55 @@
+{
+  "name": "crawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "author": "jazadehdel@sovrn.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bluebird": "^3.5.8",
+    "@types/chai": "^4.0.1",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.7",
+    "@types/sinon-chai": "^2.7.28",
+    "chai": "^4.0.2",
+    "mocha": "^3.4.2",
+    "nyc": "^11.0.3",
+    "sinon-chai": "^2.11.0",
+    "typescript": "^2.4.1"
+  },
+  "dependencies": {
+    "@onscroll/configurator": "0.0.7",
+    "@onscroll/di-ts": "^0.2.2",
+    "@onscroll/http-client-ts": "^2.0.0",
+    "@onscroll/logger-ts": "^1.1.0",
+    "@onscroll/rest-ts": "^2.0.0",
+    "bluebird": "^3.5.0",
+    "lodash": "^4.17.4",
+    "sinon": "^4.2.0"
+  },
+  "nyc": {
+    "lines": 50,
+    "statements": 50,
+    "functions": 50,
+    "branches": 50,
+    "include": [
+      "dist/src/**/*.js"
+    ],
+    "exclude": [
+      "dist/src/**/*.spec.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "cache": true,
+    "all": false,
+    "check-coverage": true,
+    "report-dir": "./coverage"
+  },
+  "scripts": {
+    "tsc": "tsc",
+    "test": "rm -rf dist && tsc && cp config.test.json config.json && nyc mocha",
+    "sandbox": "cp config.sandbox.json config.json && tsc && node dist/server.js"
+  }
+}
