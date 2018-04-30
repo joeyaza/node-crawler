@@ -4,38 +4,35 @@ var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
 var Crawler = (function () {
-    function Crawler(maxPagesToVisit, startUrl, searchWord) {
+    function Crawler(maxPagesToVisit, urls, searchWord) {
         this.maxPagesToVisit = maxPagesToVisit;
-        this.startUrl = startUrl;
+        this.urls = urls;
         this.searchWord = searchWord;
         this.numPagesVisited = 0;
         this.pagesToVisit = [];
         this.pagesVisited = {};
-        this.url = new URL(this.startUrl);
+        this.url = new URL(this.urls[0]);
         this.baseUrl = this.url.protocol + "//" + this.url.hostname;
         this.maxPagesToVisit = maxPagesToVisit;
-        this.startUrl = startUrl;
+        this.urls = urls;
         this.searchWord = searchWord;
-        this.pagesToVisit.push(this.startUrl);
+        this.pagesToVisit = this.urls;
     }
     Crawler.prototype.crawl = function () {
-        console.log("1");
-        console.log("this>>>>>", this);
         if (this.numPagesVisited >= this.maxPagesToVisit) {
             console.log("Reached max limit of number of pages to visit.");
             return;
         }
+        console.log(">>>", this.pagesToVisit);
         var nextPage = this.pagesToVisit.pop();
         if (!nextPage) {
             console.log("pages finished!!!");
             return;
         }
         if (nextPage in this.pagesVisited) {
-            console.log(2);
             this.crawl();
         }
         else {
-            console.log(3);
             this.visitPage(nextPage, this.crawl);
         }
     };
@@ -54,7 +51,6 @@ var Crawler = (function () {
                 console.log('Word ' + _this.searchWord + ' found at page ' + url);
             }
             else {
-                _this.collectInternalLinks($);
                 callback.apply(_this);
             }
         });
@@ -62,13 +58,6 @@ var Crawler = (function () {
     Crawler.prototype.searchForWord = function ($, word) {
         var bodyText = $('html > body').text().toLowerCase();
         return (bodyText.indexOf(word.toLowerCase()) !== -1);
-    };
-    Crawler.prototype.collectInternalLinks = function ($) {
-        var _this = this;
-        var relativeLinks = $("a[href^='/']");
-        relativeLinks.each(function () {
-            _this.pagesToVisit.push(_this.baseUrl + $(_this).attr('href'));
-        });
     };
     return Crawler;
 }());

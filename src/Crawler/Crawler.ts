@@ -7,18 +7,18 @@ export default class Crawler {
     private numPagesVisited: number = 0;
     private pagesToVisit: any = [];
     private pagesVisited: object = {};
-    private url = new URL(this.startUrl);
+    private url = new URL(this.urls[0]);
     private baseUrl = this.url.protocol + "//" + this.url.hostname;
 
-    constructor(
-        public maxPagesToVisit,
-        public startUrl,
-        public searchWord) {
+    constructor (
+        public maxPagesToVisit: number,
+        public urls: any,
+        public searchWord: string) {
 
         this.maxPagesToVisit = maxPagesToVisit;
-        this.startUrl = startUrl;
+        this.urls = urls;
         this.searchWord = searchWord;
-        this.pagesToVisit.push(this.startUrl);
+        this.pagesToVisit = this.urls;
 
     }
 
@@ -31,7 +31,7 @@ export default class Crawler {
 
         }
 
-        const nextPage = this.pagesToVisit.pop();
+        const nextPage = this.pagesToVisit.shift();
 
         if (!nextPage) {
 
@@ -42,13 +42,9 @@ export default class Crawler {
 
         if (nextPage in this.pagesVisited) {
 
-            console.log(2);
-
             this.crawl();
         
         } else {
-
-            console.log(3);
 
             this.visitPage(nextPage, this.crawl);
 
@@ -64,7 +60,6 @@ export default class Crawler {
         console.log("Visiting page " + url);
 
         request(url, (error, response, body) => {
-
 
          if(response.statusCode !== 200) {
 
@@ -82,7 +77,7 @@ export default class Crawler {
 
          } else {
 
-           this.collectInternalLinks($);
+           // this.collectInternalLinks($);
 
            callback.apply(this);
 
@@ -102,17 +97,21 @@ export default class Crawler {
 
     }
 
-    collectInternalLinks($) {
+    // collectInternalLinks($) {
 
-        const relativeLinks: any = $("a[href^='/']");
+    //    const relativeLinks: any = $("a[href^='/']");
 
-        relativeLinks.each(() => {
+    //    console.log("Found " + relativeLinks.length + " relative links on page");
 
-            this.pagesToVisit.push(this.baseUrl + $(this).attr('href'));
+    //    const that = this;
 
-        });
+    //    relativeLinks.each(function() {
+        
+    //       that.pagesToVisit.push(that.baseUrl + $(this).attr('href'));
 
-    }
+    //    });
+
+    // }
 
 
 }
